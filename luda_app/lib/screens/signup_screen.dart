@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_service.dart';
+
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -31,7 +33,9 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _register() async {
     if (_nameController.text.isEmpty ||
         _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+        _passwordController.text.isEmpty ||
+        _gender == null ||
+        _selectedDate == null) {
       _showError('Please fill in all fields');
       return;
     }
@@ -39,27 +43,35 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse('http://localhost:8000/api/register');
-      final response = await http.post(
-        url,
-        body: {
-          'name': _nameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-          'gender': _gender,
-          'dob': '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
-        },
-      );
+      // Prepare data
+      final data = {
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text,
+        'gender': _gender,
+        'dob':
+        '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
+      };
 
-      if (response.statusCode == 201) {
-        final data = json.decode(response.body);
+      // Call ApiService
+      final response = await ApiService.register(data);
+
+      if (response.containsKey('token')) {
+        // Save token & role_id
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', data['token']);
-        await prefs.setInt('role_id', data['user']['role_id']);
+        await prefs.setString('token', response['token']);
+        await prefs.setInt('role_id', response['user']['role_id']);
+
+        // Show success toast
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful!')),
+        );
+
+        // Navigate to client home
         Navigator.pushReplacementNamed(context, '/client_home');
       } else {
-        final data = json.decode(response.body);
-        _showError(data['message'] ?? 'Registration failed');
+        // Show API error
+        _showError(response['message'] ?? 'Registration failed');
       }
     } catch (e) {
       _showError('Connection error. Please try again.');

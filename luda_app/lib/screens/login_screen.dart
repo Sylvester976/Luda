@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -33,17 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse('http://localhost:8000/api/login');
-      final response = await http.post(
-        url,
-        body: {
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        },
-      );
+      // Use ApiService.login
+      final data = await ApiService.login({
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text,
+      });
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      // Check if data contains token (successful login)
+      if (data.containsKey('token')) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', data['token']);
         await prefs.setInt('role_id', data['user']['role_id']);
@@ -62,9 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
           case 3:
             Navigator.pushReplacementNamed(context, '/barber_home');
             break;
+          default:
+            _showError('Unknown role');
         }
       } else {
-        final data = json.decode(response.body);
         _showError(data['message'] ?? 'Login failed');
       }
     } catch (e) {
