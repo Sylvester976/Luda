@@ -108,101 +108,143 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return _buildIOSLayout();
-    } else {
-      return _buildMaterialLayout();
-    }
-  }
-
-  Widget _buildIOSLayout() {
-    return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemBackground,
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    SizedBox(height: 60),
-                    _buildLogo(true),
-                    SizedBox(height: 24),
-                    Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: CupertinoColors.label,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Sign in to continue',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: CupertinoColors.secondaryLabel,
-                      ),
-                    ),
-                    SizedBox(height: 48),
-                    _buildEmailField(true),
-                    SizedBox(height: 16),
-                    _buildPasswordField(true),
-                    SizedBox(height: 32),
-                    _buildLoginButton(true),
-                    Spacer(),
-                    _buildSignupLink(true),
-                    SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMaterialLayout() {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFB794F6), // Purple
+              Color(0xFFF5E6D3), // Cream
+              Color(0xFFFFF4E6), // Light cream
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 60),
-                _buildLogo(false),
+                // Logo
+                Center(
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Icon(
+                      Icons.content_cut,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  ),
+                ),
                 SizedBox(height: 24),
+                // App name
                 Text(
-                  'Welcome Back',
+                  'Luda',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 36,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
+                    letterSpacing: 1,
                   ),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Sign in to continue',
+                  'Welcome back',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: Colors.black54,
                   ),
                 ),
-                SizedBox(height: 48),
-                _buildEmailField(false),
-                SizedBox(height: 16),
-                _buildPasswordField(false),
-                SizedBox(height: 32),
-                _buildLoginButton(false),
-                SizedBox(height: 24),
-                _buildSignupLink(false),
                 SizedBox(height: 60),
+                // Email field
+                _buildTextField(
+                  controller: _emailController,
+                  hint: 'Email address',
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 16),
+                // Password field
+                _buildPasswordField(),
+                SizedBox(height: 32),
+                // Login button
+                SizedBox(
+                  width: double.infinity,
+                  height: 64,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF1C1C1E), // Dark gray/black
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                    ),
+                    child: _isLoading
+                        ? SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                        : Text(
+                      'Sign in now',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24),
+                // Sign up link
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 15,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/signup');
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        'Sign up',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0066FF),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -211,230 +253,98 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLogo(bool isIOS) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    TextInputType? keyboardType,
+  }) {
     return Container(
-      width: 80,
-      height: 80,
+      height: 64,
       decoration: BoxDecoration(
-        color: isIOS ? CupertinoColors.activeBlue : Colors.blue,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
-      child: Icon(
-        isIOS ? CupertinoIcons.scissors : Icons.content_cut,
-        size: 40,
-        color: Colors.white,
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        autocorrect: false,
+        style: TextStyle(fontSize: 17, color: Colors.black87, fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.black38, fontWeight: FontWeight.normal),
+          prefixIcon: Padding(
+            padding: EdgeInsets.only(left: 24, right: 16),
+            child: Icon(icon, color: Colors.black54, size: 22),
+          ),
+          prefixIconConstraints: BoxConstraints(minWidth: 62),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        ),
       ),
     );
   }
 
-  Widget _buildEmailField(bool isIOS) {
-    if (isIOS) {
-      return Container(
-        decoration: BoxDecoration(
-          color: CupertinoColors.systemGrey6,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: CupertinoTextField(
-          controller: _emailController,
-          placeholder: 'Email',
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: CupertinoColors.systemGrey6,
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildPasswordField() {
+    return Container(
+      height: 64,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          keyboardType: TextInputType.emailAddress,
-          autocorrect: false,
-          prefix: Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Icon(
-              CupertinoIcons.mail,
-              color: CupertinoColors.systemGrey,
-            ),
-          ),
-        ),
-      );
-    } else {
-      return TextField(
-        controller: _emailController,
-        keyboardType: TextInputType.emailAddress,
-        autocorrect: false,
-        decoration: InputDecoration(
-          labelText: 'Email',
-          prefixIcon: Icon(Icons.email_outlined),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          filled: true,
-          fillColor: Colors.grey[100],
-        ),
-      );
-    }
-  }
-
-  Widget _buildPasswordField(bool isIOS) {
-    if (isIOS) {
-      return Container(
-        decoration: BoxDecoration(
-          color: CupertinoColors.systemGrey6,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: CupertinoTextField(
-          controller: _passwordController,
-          placeholder: 'Password',
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: CupertinoColors.systemGrey6,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          obscureText: _obscurePassword,
-          prefix: Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Icon(
-              CupertinoIcons.lock,
-              color: CupertinoColors.systemGrey,
-            ),
-          ),
-          suffix: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: Icon(
-              _obscurePassword ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-              color: CupertinoColors.systemGrey,
-            ),
-            onPressed: () {
-              setState(() => _obscurePassword = !_obscurePassword);
-            },
-          ),
-        ),
-      );
-    } else {
-      return TextField(
+        ],
+      ),
+      child: TextField(
         controller: _passwordController,
         obscureText: _obscurePassword,
+        style: TextStyle(fontSize: 17, color: Colors.black87, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
-          labelText: 'Password',
-          prefixIcon: Icon(Icons.lock_outline),
-          suffixIcon: IconButton(
-            icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-            onPressed: () {
-              setState(() => _obscurePassword = !_obscurePassword);
-            },
+          hintText: 'Password',
+          hintStyle: TextStyle(color: Colors.black38, fontWeight: FontWeight.normal),
+          prefixIcon: Padding(
+            padding: EdgeInsets.only(left: 24, right: 16),
+            child: Icon(Icons.lock_outline, color: Colors.black54, size: 22),
+          ),
+          prefixIconConstraints: BoxConstraints(minWidth: 62),
+          suffixIcon: Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: IconButton(
+              icon: Icon(
+                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                color: Colors.black54,
+                size: 22,
+              ),
+              onPressed: () {
+                setState(() => _obscurePassword = !_obscurePassword);
+              },
+            ),
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.grey[100],
+          fillColor: Colors.transparent,
+          contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         ),
-      );
-    }
-  }
-
-  Widget _buildLoginButton(bool isIOS) {
-    if (isIOS) {
-      return SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: CupertinoButton(
-          color: CupertinoColors.activeBlue,
-          borderRadius: BorderRadius.circular(12),
-          onPressed: _isLoading ? null : _login,
-          child: _isLoading
-              ? CupertinoActivityIndicator(color: CupertinoColors.white)
-              : Text(
-            'Sign In',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: ElevatedButton(
-          onPressed: _isLoading ? null : _login,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: _isLoading
-              ? SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          )
-              : Text(
-            'Sign In',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  Widget _buildSignupLink(bool isIOS) {
-    if (isIOS) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Don't have an account? ",
-            style: TextStyle(
-              color: CupertinoColors.secondaryLabel,
-              fontSize: 15,
-            ),
-          ),
-          CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: Text(
-              'Sign Up',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/signup');
-            },
-          ),
-        ],
-      );
-    } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Don't have an account? ",
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 15,
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/signup');
-            },
-            child: Text(
-              'Sign Up',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      );
-    }
+      ),
+    );
   }
 }

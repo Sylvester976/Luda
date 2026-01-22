@@ -12,44 +12,24 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Use Material for Android/Web, Cupertino theme for iOS
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return CupertinoApp(
-        title: 'Barber Booking',
-        debugShowCheckedModeBanner: false,
-        theme: CupertinoThemeData(
-          primaryColor: CupertinoColors.activeBlue,
-          brightness: Brightness.light,
-        ),
-        initialRoute: '/login',
-        routes: {
-          '/login': (context) => LoginScreen(),
-          '/signup': (context) => SignupScreen(),
-          '/client_home': (context) => PlaceholderScreen(title: 'Client Home'),
-          '/superadmin_home': (context) => PlaceholderScreen(title: 'Super Admin Home'),
-          '/barber_owner_home': (context) => PlaceholderScreen(title: 'Barber Owner Home'),
-          '/barber_home': (context) => PlaceholderScreen(title: 'Barber Home'),
-        },
-      );
-    } else {
-      return MaterialApp(
-        title: 'Barber Booking',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
-        initialRoute: '/login',
-        routes: {
-          '/login': (context) => LoginScreen(),
-          '/signup': (context) => SignupScreen(),
-          '/client_home': (context) => PlaceholderScreen(title: 'Client Home'),
-          '/superadmin_home': (context) => PlaceholderScreen(title: 'Super Admin Home'),
-          '/barber_owner_home': (context) => PlaceholderScreen(title: 'Barber Owner Home'),
-          '/barber_home': (context) => PlaceholderScreen(title: 'Barber Home'),
-        },
-      );
-    }
+    return MaterialApp(
+      title: 'Barber Booking',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        fontFamily: 'SF Pro Display', // iOS-style font
+      ),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/signup': (context) => SignupScreen(),
+        '/client_home': (context) => PlaceholderScreen(title: 'Client Home'),
+        '/superadmin_home': (context) => PlaceholderScreen(title: 'Super Admin Home'),
+        '/barber_owner_home': (context) => PlaceholderScreen(title: 'Barber Owner Home'),
+        '/barber_home': (context) => PlaceholderScreen(title: 'Barber Home'),
+      },
+    );
   }
 }
 
@@ -61,55 +41,99 @@ class PlaceholderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text(title),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              CupertinoButton.filled(
-                child: Text('Logout'),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
-              ),
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFB794F6),
+              Color(0xFFF5E6D3),
+              Color(0xFFFFF4E6),
             ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                child: Text('Logout'),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
-              ),
-            ],
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: 80,
+                        color: Colors.green,
+                      ),
+                      SizedBox(height: 24),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Welcome to your premium experience',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 40),
+                SizedBox(
+                  width: 200,
+                  height: 64,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF1C1C1E), // Dark gray/black
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                    ),
+                    child: Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 }
