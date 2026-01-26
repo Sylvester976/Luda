@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
-  static const baseUrl = "http://10.140.17.100:8000/api";
+  static const baseUrl = "http://10.140.17.102:8000/api";
 
   static Future<Map<String,dynamic>> register(Map<String,String> data) async {
     final response = await http.post(Uri.parse('$baseUrl/register'), body: data);

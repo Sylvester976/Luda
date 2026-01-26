@@ -1,7 +1,7 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'screens/client_home.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
-        '/client_home': (context) => PlaceholderScreen(title: 'Client Home'),
+        '/client_home': (context) => ClientHomeScreen(),
         '/superadmin_home': (context) => PlaceholderScreen(title: 'Super Admin Home'),
         '/barber_owner_home': (context) => PlaceholderScreen(title: 'Barber Owner Home'),
         '/barber_home': (context) => PlaceholderScreen(title: 'Barber Home'),
